@@ -5,14 +5,14 @@ A polished, animated Connect Four built with Python and Pygame.
 ## Features
 - 1 Player vs Computer (Easy/Medium/Hard with minimax + alpha-beta)
 - 2 Players local
-- Smooth drop animations, hover previews, win highlights
+- Smooth drop animations
 - Modern look: gradient background, glossy tokens, cut-out board
 - Resizable window with responsive layout
 
 ## Quick Start
 
 ### Prerequisites
-- Python 3.9 or newer recommended
+- Python 3.9 or newer recommended (not 3.13, might give installation issues)
 
 ### Create a virtual environment
 
@@ -40,7 +40,7 @@ python connect_four.py
 ```
 
 ## Controls
-- Mouse: move over a column to preview; click to drop
+- Mouse: click at a column to drop
 - R: restart the current match
 - ESC: return to Main Menu
 
