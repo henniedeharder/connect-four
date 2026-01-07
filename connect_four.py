@@ -9,7 +9,7 @@ import pygame
 # ==============================
 # - 1P vs AI (minimax + alpha-beta, Easy/Medium/Hard)
 # - 2P local
-# - Smooth piece drop animation, hover preview
+# - Smooth piece drop animation
 # - Win highlighting and polished board with cut-out holes
 #
 # Requires: pygame
@@ -19,11 +19,9 @@ import pygame
 #   python connect_four.py
 #
 # Controls:
-# - Mouse hover: preview next drop
 # - Mouse click: place a piece
 # - ESC: back to main menu
 # - R: restart match
-#
 
 # ------------- Game Constants -------------
 ROWS = 6
@@ -329,7 +327,6 @@ class GameUI:
         self.board_rect = None
         self.cell_size = None
         self.hole_radius = None
-        self.hover_col = None
 
         # Menu buttons
         self.buttons = []
@@ -398,7 +395,7 @@ class GameUI:
         pygame.draw.rect(shadow, COLOR_SHADOW, shadow.get_rect(), border_radius=24)
         self.screen.blit(shadow, (self.board_rect.x - 12, self.board_rect.y - 6))
 
-        # Tokens first (so they appear under the board overlay holes)
+        # Tokens first
         self.draw_tokens()
 
         # Board overlay with cut-out holes
@@ -414,9 +411,6 @@ class GameUI:
                 pygame.draw.circle(board_surf, (0, 0, 0, 0), (cx, cy), self.hole_radius)
 
         self.screen.blit(board_surf, self.board_rect.topleft)
-
-        # Hover preview on top
-        self.draw_hover_preview()
 
         # Win highlight if any
         if self.winning_positions:
@@ -449,28 +443,6 @@ class GameUI:
         surf.blit(gloss, (0, 0), special_flags=pygame.BLEND_PREMULTIPLIED)
 
         self.screen.blit(surf, (x - center[0], y - center[1]))
-
-    def draw_hover_preview(self):
-        if self.state != "PLAYING" or self.hover_col is None:
-            return
-        if not self.board.is_valid_col(self.hover_col):
-            return
-        r = self.board.get_next_open_row(self.hover_col)
-        if r is None:
-            return
-        p = self.turn
-        color = COLOR_P1 if p == 1 else COLOR_P2
-        cx = self.board_rect.x + int(self.hover_col * self.cell_size + self.cell_size / 2)
-        top_y = self.board_rect.y - self.cell_size // 2
-        # Draw semi-transparent preview
-        surf = pygame.Surface((self.hole_radius * 2 + 6, self.hole_radius * 2 + 6), pygame.SRCALPHA)
-        self.draw_token(self.hole_radius + 3, self.hole_radius + 3, self.hole_radius - 2, color)
-        # Apply alpha
-        temp = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
-        temp.blit(self.screen, (- (cx - self.hole_radius - 3), - (top_y - self.hole_radius - 3)))
-        surf.set_alpha(150)
-        # Instead of compositing, just draw a dim token
-        self.draw_token(cx, top_y, self.hole_radius - 2, lighten(color, 30))
 
     def draw_win_highlight(self, positions):
         # Draw a glowing line through the center of the 4 winning slots
@@ -508,7 +480,7 @@ class GameUI:
             if y > target_y:
                 y = target_y
 
-            self.draw_frame(preview=False)
+            self.draw_frame()
             self.draw_token(cx, int(y), self.hole_radius - 2, color)
             pygame.display.flip()
 
@@ -552,8 +524,8 @@ class GameUI:
         for b in self.buttons:
             b.draw(self.screen, mouse_pos)
 
-        # Footer
-        footer = self.font_sm.render("Tip: Hover over a column to preview your move. ESC to return here.", True, COLOR_MUTED)
+        # Footer (no hover preview mention)
+        footer = self.font_sm.render("Tip: ESC to return to menu. Press R to restart a match.", True, COLOR_MUTED)
         self.screen.blit(footer, footer.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() - 40)))
 
     def start_game(self, mode, ai_depth):
@@ -598,7 +570,7 @@ class GameUI:
         for b in [btn_restart, btn_menu]:
             b.draw(self.screen, pygame.mouse.get_pos())
 
-    def draw_frame(self, preview=True):
+    def draw_frame(self):
         self.draw_background()
         self.draw_top_bar()
         self.draw_board_layers()
@@ -688,7 +660,6 @@ class GameUI:
     def run_game_loop(self):
         while self.state == "PLAYING" or self.state == "GAME_OVER":
             self.clock.tick(FPS)
-            self.hover_col = None
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit(); sys.exit()
@@ -704,11 +675,6 @@ class GameUI:
                         # restart match
                         self.start_game(self.mode, self.ai_depth if self.mode == "AI" else None)
                         continue
-                elif event.type == pygame.MOUSEMOTION:
-                    if self.board_rect.collidepoint(event.pos):
-                        col = (event.pos[0] - self.board_rect.x) // self.cell_size
-                        if 0 <= col < COLS:
-                            self.hover_col = int(col)
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.handle_game_click(event.pos)
 
@@ -719,7 +685,7 @@ class GameUI:
 # ------------- Entry Point -------------
 def main():
     pygame.init()
-    pygame.display.set_caption("Connect Four - Beautiful Edition")
+    pygame.display.set_caption("Connect Four")
     flags = pygame.RESIZABLE
     screen = pygame.display.set_mode((WINDOW_W, WINDOW_H), flags)
     ui = GameUI(screen)
