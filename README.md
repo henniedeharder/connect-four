@@ -51,13 +51,13 @@ python connect_four.py
 ## Project Structure
 ```
 .
-â”œâ”€â”€ connect_four.py        # Game code (Pygame UI + AI)
-â”œâ”€â”€ requirements.txt       # Python dependencies
-â”œâ”€â”€ .gitignore             # Git ignore rules
-â”œâ”€â”€ README.md              # This file
-â””â”€â”€ scripts/
-    â”œâ”€â”€ setup_venv.sh      # Optional helper (macOS/Linux)
-    â””â”€â”€ setup_venv.ps1     # Optional helper (Windows PowerShell)
+├── connect_four.py        # Game code (Pygame UI + AI)
+├── requirements.txt       # Python dependencies
+├── .gitignore             # Git ignore rules
+├── README.md              # This file
+└── scripts/
+    ├── setup_venv.sh      # Optional helper (macOS/Linux)
+    └── setup_venv.ps1     # Optional helper (Windows PowerShell)
 ```
 
 ## Optional: one-liner setup
